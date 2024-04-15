@@ -21,3 +21,8 @@ For a tutorial on how Brendan was initially set up, see https://swimburger.net/b
 ## License
 
 Brendan is licensed by the Elite Deep-Space Explorers Network with the MIT license.
+
+## Production Configuration
+
+Brendan is deployed to an Azure Container Instance using the guidance at https://learn.microsoft.com/en-us/azure/container-instances/container-instances-github-action, specifically the GitHub
+Action method using a service principal.

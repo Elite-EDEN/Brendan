@@ -1,7 +1,7 @@
 using DSharpPlus;
 using DSharpPlus.EventArgs;
 
-namespace EDEN.Breandan
+namespace EDEN.Brendan
 {
     public class Worker(ILogger<Worker> logger, IConfiguration configuration) : BackgroundService
 	{
@@ -13,11 +13,12 @@ namespace EDEN.Breandan
             logger.LogInformation("Starting discord bot");
 
             var discordBotToken = Environment.GetEnvironmentVariable("DISCORD_BOT_TOKEN");
-            _discordClient = new DiscordClient(new DiscordConfiguration()
+
+			_discordClient = new DiscordClient(new DiscordConfiguration()
             {
                 Token = discordBotToken,
                 TokenType = TokenType.Bot,
-                Intents = DiscordIntents.AllUnprivileged
+                Intents = DiscordIntents.All
             });
 
             _discordClient.MessageCreated += OnMessageCreated;
