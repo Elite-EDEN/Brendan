@@ -43,7 +43,7 @@ namespace EDEN.Brendan
             if (e.Message.Content.StartsWith("ping", StringComparison.OrdinalIgnoreCase))
             {
                 logger.LogInformation("pinged, responding with pong!");
-                await e.Message.RespondAsync("pong!");
+                await e.Message.RespondAsync("Pong...");
             }
         }
     }
