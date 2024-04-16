@@ -34,4 +34,5 @@ jobs:
             registry-username: ${{ secrets.REGISTRY_USERNAME }}
             registry-password: ${{ secrets.REGISTRY_PASSWORD }}
             name: brendan-container
+            secure-environment-variables: DISCORD_BOT_TOKEN=${{ secrets.DISCORD_BOT_TOKEN }}
             location: 'south central us'
