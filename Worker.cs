@@ -1,8 +1,6 @@
-using Brendan.Commands;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
-using DSharpPlus.EventArgs;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Reflection;
 
 namespace EDEN.Brendan
 {
@@ -30,7 +28,7 @@ namespace EDEN.Brendan
 				StringPrefixes = ["!"]
 			});
 
-			commands.RegisterCommands<MyFirstModule>();
+			commands.RegisterCommands(Assembly.GetExecutingAssembly());
 
 			await _discordClient.ConnectAsync();
         }
