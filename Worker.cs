@@ -1,5 +1,8 @@
+using Brendan.Commands;
 using DSharpPlus;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.EventArgs;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace EDEN.Brendan
 {
@@ -18,11 +21,18 @@ namespace EDEN.Brendan
             {
                 Token = discordBotToken,
                 TokenType = TokenType.Bot,
-                Intents = DiscordIntents.All
+                Intents = DiscordIntents.All,
+				MinimumLogLevel = LogLevel.Information
             });
 
-            _discordClient.MessageCreated += OnMessageCreated;
-            await _discordClient.ConnectAsync();
+			var commands = _discordClient.UseCommandsNext(new CommandsNextConfiguration
+			{
+				StringPrefixes = ["!"]
+			});
+
+			commands.RegisterCommands<MyFirstModule>();
+
+			await _discordClient.ConnectAsync();
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken) =>  Task.CompletedTask;
@@ -30,21 +40,11 @@ namespace EDEN.Brendan
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
 			if (_discordClient != null) {
-				_discordClient.MessageCreated -= OnMessageCreated;
 				await _discordClient.DisconnectAsync();
 				_discordClient.Dispose();
 			}
 
 			logger.LogInformation("Discord bot stopped");
-        }
-
-        private async Task OnMessageCreated(DiscordClient client, MessageCreateEventArgs e)
-        {
-            if (e.Message.Content.StartsWith("ping", StringComparison.OrdinalIgnoreCase))
-            {
-                logger.LogInformation("pinged, responding with pong!");
-                await e.Message.RespondAsync("Verily, pong.");
-            }
         }
     }
 }
