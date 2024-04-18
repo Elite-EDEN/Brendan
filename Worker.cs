@@ -23,9 +23,14 @@ namespace EDEN.Brendan
 				MinimumLogLevel = LogLevel.Information
             });
 
+			var services = new ServiceCollection()
+						   .AddSingleton<Random>()
+						   .BuildServiceProvider();
+
 			var commands = _discordClient.UseCommandsNext(new CommandsNextConfiguration
 			{
-				StringPrefixes = ["!"]
+				StringPrefixes = ["!"],
+				Services = services
 			});
 
 			commands.RegisterCommands(Assembly.GetExecutingAssembly());
