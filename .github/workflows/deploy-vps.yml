@@ -33,3 +33,9 @@ jobs:
       # We will output publish files to the folder we previously created
       - name: Publish
         run: dotnet publish -c Release -o /var/brendan
+
+      - name: Restart the app
+        run: |
+          export XDG_RUNTIME_DIR=/run/user/$(id -u)
+          systemctl --user restart brendan.service
+
