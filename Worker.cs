@@ -73,10 +73,7 @@ namespace EDEN.Brendan
 			// You also need to pass your 'IServiceProvider' instance now,
 			// so make sure that's done before you get here.
 			await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
-			// Or add Modules manually if you prefer to be a little more explicit:
-			//await _commands.AddModuleAsync<InfoModule>(_services);
-			// Note that the first one is 'Modules' (plural) and the second is 'Module' (singular).
-
+			
 			// Subscribe a handler to see if a message invokes a command.
 			_client.MessageReceived += HandleCommandAsync;
 		}
