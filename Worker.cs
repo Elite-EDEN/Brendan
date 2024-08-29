@@ -2,6 +2,7 @@ using Discord.WebSocket;
 using Discord;
 using Discord.Commands;
 using System.Reflection;
+using EDEN.Brendan.Commands;
 
 namespace EDEN.Brendan
 {
@@ -73,7 +74,7 @@ namespace EDEN.Brendan
 			// so make sure that's done before you get here.
 			await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
 			// Or add Modules manually if you prefer to be a little more explicit:
-			//await _commands.AddModuleAsync<SomeModule>(_services);
+			//await _commands.AddModuleAsync<InfoModule>(_services);
 			// Note that the first one is 'Modules' (plural) and the second is 'Module' (singular).
 
 			// Subscribe a handler to see if a message invokes a command.
