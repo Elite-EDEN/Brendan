@@ -2,26 +2,29 @@ using Discord.WebSocket;
 using Discord;
 using Discord.Commands;
 using System.Reflection;
-using EDEN.Brendan.Commands;
 
 namespace EDEN.Brendan
 {
     public class Worker(ILogger<Worker> logger, IConfiguration configuration) : BackgroundService
 	{
-		private readonly IConfiguration _configuration = configuration;
 		private static DiscordSocketClient? _client;
 		private static CommandService? _commands;
 		private static IServiceProvider? _services;
 
+		#region "Discord Client Main Actions"
+
 		public override async Task StartAsync(CancellationToken cancellationToken)
-        {
-			_client = new DiscordSocketClient(new DiscordSocketConfig {
-				LogLevel = LogSeverity.Info
+		{
+			var logLevel = GetDiscordLogLevel(configuration);
+
+			_client = new DiscordSocketClient(new DiscordSocketConfig
+			{
+				LogLevel = logLevel
 			});
 
 			_commands = new CommandService(new CommandServiceConfig
 			{
-				LogLevel = LogSeverity.Info,
+				LogLevel = logLevel,
 				CaseSensitiveCommands = false,
 			});
 
@@ -43,21 +46,26 @@ namespace EDEN.Brendan
 			await Task.Delay(Timeout.Infinite, cancellationToken);
 		}
 
-        protected override Task ExecuteAsync(CancellationToken stoppingToken) =>  Task.CompletedTask;
+		protected override Task ExecuteAsync(CancellationToken stoppingToken) => Task.CompletedTask;
 
-        public override async Task StopAsync(CancellationToken cancellationToken)
-        {
-			if (_client != null) {
+		public override async Task StopAsync(CancellationToken cancellationToken)
+		{
+			if (_client != null)
+			{
 				await _client.StopAsync();
 				await _client.DisposeAsync();
 			}
 			logger.LogInformation("Discord bot stopped");
-        }
+		}
+
+		#endregion
+
+		#region "Initializtaion Methods"
 
 		// If any services require the client, or the CommandService, or something else you keep on hand,
 		// pass them as parameters into this method as needed.
 		// If this method is getting pretty long, you can separate it out into another file using partials.
-		private static IServiceProvider ConfigureServices()
+		private static ServiceProvider ConfigureServices()
 		{
 			var serviceCollection = new ServiceCollection();
 			//serviceCollection.AddSingleton(new SomeServiceClass());
@@ -77,6 +85,10 @@ namespace EDEN.Brendan
 			// Subscribe a handler to see if a message invokes a command.
 			_client.MessageReceived += HandleCommandAsync;
 		}
+
+		#endregion
+
+		#region "Main Command Handler"
 
 		private static async Task HandleCommandAsync(SocketMessage arg)
 		{
@@ -108,31 +120,50 @@ namespace EDEN.Brendan
 			}
 		}
 
+		#endregion
+
+		#region "Logging Helpers"
+
 		private Task Log(LogMessage msg)
 		{
 			switch (msg.Severity) {
 				case LogSeverity.Critical:
-					logger.LogCritical(msg.Message);
+					logger.LogCritical("{message}", msg.Message);
 					break;
 				case LogSeverity.Error:
-					logger.LogError(msg.Message);
+					logger.LogError("{message}", msg.Message);
 					break;
 				case LogSeverity.Warning:
-					logger.LogWarning(msg.Message);
+					logger.LogWarning("{message}", msg.Message);
 					break;
 				case LogSeverity.Info:
-					logger.LogInformation(msg.Message);
+					logger.LogInformation("{message}", msg.Message);
 					break;
 				case LogSeverity.Verbose:
-					logger.LogTrace(msg.ToString());
+					logger.LogTrace("{message}", msg.ToString());
 					break;
 				case LogSeverity.Debug:
-					logger.LogDebug(msg.ToString());
+					logger.LogDebug("{message}", msg.ToString());
 					break;
 				default:
-					throw new ArgumentOutOfRangeException();
+					throw new ArgumentOutOfRangeException(msg.Severity.ToString());
 			}
 			return Task.CompletedTask;
 		}
+
+		private static LogSeverity GetDiscordLogLevel(IConfiguration config)
+		{
+			return config["Logging:LogLevel:Default"] switch {
+				"Critical" => LogSeverity.Critical,
+				"Error" => LogSeverity.Error,
+				"Warning" => LogSeverity.Warning,
+				"Information" => LogSeverity.Info,
+				"Verbose" => LogSeverity.Verbose,
+				"Debug" => LogSeverity.Debug,
+				_ => LogSeverity.Info
+			};
+		}
+
+		#endregion
 	}
 }
